@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Fireworks</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<canvas id="fireworksCanvas"></canvas>
+<script>
+    const canvas = document.getElementById('fireworksCanvas');
+    const ctx = canvas.getContext('2d');
+    const emojis = ['🎉', '✨', '💥', '🌟', '💫'];
+    let particles = [];
+
+    // Resize the canvas to fill browser window dynamically
+    window.addEventListener('resize', resizeCanvas, false);
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas(); // Initial resize
+
+    // Particle class
+    class Particle {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.radius = Math.random() * 4 + 1;
+            this.velocity = {
+                x: (Math.random() - 0.5) * 2,
+                y: (Math.random() - 0.5) * 2
+            };
+            this.emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            this.life = 100 + Math.random() * 50;
+        }
+
+        update() {
+            this.x += this.velocity.x;
+            this.y += this.velocity.y;
+            this.life--;
+        }
+
+        draw(context) {
+            context.font = "20px Arial";
+            context.fillText(this.emoji, this.x, this.y);
+        }
+    }
+
+    function addEmojiFirework(x, y) {
+        for (let i = 0; i < 50; i++) {
+            particles.push(new Particle(x, y));
+        }
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        particles = particles.filter(particle => particle.life > 0);
+        
+        particles.forEach(particle => {
+            particle.update();
+            particle.draw(ctx);
+        });
+    }
+
+    canvas.addEventListener('click', function(event) {
+        addEmojiFirework(event.clientX, event.clientY);
+    });
+
+    animate();
+</script>
+</body>
+</html>
